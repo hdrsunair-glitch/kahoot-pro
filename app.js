@@ -23,10 +23,10 @@ function createGame(){
 
   document.getElementById("pin").innerText = pin;
 
-  db.ref("games/"+pin).set({
-    questionIndex: 0,
-    players: {}
-  });
+db.ref("games/"+pin).set({
+  questionIndex: -1,
+  players: {}
+});
 }
 
 // NEXT SOAL
