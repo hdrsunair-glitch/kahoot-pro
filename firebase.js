@@ -1,10 +1,10 @@
 // firebase.js
 
 const firebaseConfig = {
-  apiKey: "ISI",
-  authDomain: "ISI",
+  apiKey: "AIzaSyBTcUrylDbAc57VXdpL1RMM2DVKSdNJy5I",
+  authDomain: "kahoot-clone2.firebaseapp.com",
   databaseURL: "https://kahoot-clone2-default-rtdb.firebaseio.com",
-  projectId: "ISI",
+  projectId: "kahoot-clone2",
 };
 
 firebase.initializeApp(firebaseConfig);
