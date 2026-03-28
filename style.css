@@ -1,0 +1,30 @@
+body {
+  font-family: Arial;
+  text-align: center;
+  background: #0f172a;
+  color: white;
+}
+
+button {
+  width: 40%;
+  margin: 10px;
+  padding: 20px;
+  font-size: 18px;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+}
+
+button:nth-child(1){ background: red; }
+button:nth-child(2){ background: blue; }
+button:nth-child(3){ background: yellow; color:black;}
+button:nth-child(4){ background: green; }
+
+button:hover {
+  transform: scale(1.1);
+}
+
+input {
+  padding: 10px;
+  margin: 10px;
+}
