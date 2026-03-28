@@ -3,7 +3,7 @@
 const firebaseConfig = {
   apiKey: "ISI",
   authDomain: "ISI",
-  databaseURL: "ISI",
+  databaseURL: "https://kahoot-clone2-default-rtdb.firebaseio.com",
   projectId: "ISI",
 };
 
