@@ -90,6 +90,15 @@ function answer(i){
   } else {
     document.getElementById("wrong").play();
   }
+
+  // 🔥 PINDAH SOAL OTOMATIS
+  db.ref("games/"+pin+"/questionIndex")
+  .transaction(n => (n||0)+1);
+}
+
+  } else {
+    document.getElementById("wrong").play();
+  }
 }
 
 // LEADERBOARD
