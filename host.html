@@ -1,22 +1,49 @@
 <!DOCTYPE html>
-<html>
+<html lang="id">
 <head>
-<title>Host</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Host - Kahoot Pro</title>
+
 <link rel="stylesheet" href="style.css">
 </head>
 
-<body onload="createGame()">
+<body onload="initHost()">
 
 <h1>📺 HOST</h1>
-<h2>PIN: <span id="pin"></span></h2>
+<h2>PIN: <span id="pin">...</span></h2>
 
-<button onclick="nextQuestion()">NEXT</button>
+<button onclick="handleNext()">NEXT ▶</button>
 
+<p id="status"></p>
+
+<!-- Firebase -->
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
 
+<!-- App -->
 <script src="firebase.js"></script>
 <script src="app.js"></script>
+
+<script>
+// INIT HOST
+function initHost(){
+  createGame();
+  document.getElementById("status").innerText = "Game dibuat, tunggu player...";
+}
+
+// HANDLE NEXT (AMAN)
+function handleNext(){
+  if(!pin){
+    alert("PIN belum siap!");
+    return;
+  }
+
+  nextQuestion();
+
+  document.getElementById("status").innerText = "Soal berikutnya...";
+}
+</script>
 
 </body>
 </html>
