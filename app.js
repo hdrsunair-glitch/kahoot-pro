@@ -25,10 +25,10 @@ function createGame(){
   db.ref("games/"+pin).set({
     questionIndex: -1,
     players: {}
+  }).then(() => {
+    // 🔥 tunggu database siap baru listen
+    listenPlayers();
   });
-
-  // 🔥 aktifkan leaderboard realtime
-  listenPlayers();
 }
 
 // NEXT SOAL (HOST ONLY)
@@ -136,21 +136,33 @@ function showLeaderboard(){
 
 // ================== HOST LEADERBOARD ==================
 function listenPlayers(){
-  if(!pin) return;
+  if(!pin){
+    console.log("PIN belum siap");
+    return;
+  }
 
   db.ref("games/"+pin+"/players").on("value", snap=>{
     const data = snap.val();
 
     const el = document.getElementById("leaderboard");
+    const countEl = document.getElementById("playerCount");
+
     if(!el) return;
 
+    // kalau belum ada player
     if(!data){
-      el.innerHTML = "Belum ada player";
+      el.innerHTML = "Menunggu player...";
+      if(countEl) countEl.innerText = "0";
       return;
     }
 
-    let rank = Object.entries(data)
-    .sort((a,b)=>b[1].score - a[1].score);
+    let players = Object.entries(data);
+
+    // jumlah player
+    if(countEl) countEl.innerText = players.length;
+
+    // sorting ranking
+    let rank = players.sort((a,b)=>b[1].score - a[1].score);
 
     let html = "<h3>🏆 Ranking</h3>";
 
