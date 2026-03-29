@@ -1,5 +1,4 @@
-// app.js
-
+// ================== GLOBAL ==================
 let pin;
 let playerName;
 let index = 0;
@@ -27,12 +26,17 @@ function createGame(){
     questionIndex: -1,
     players: {}
   });
+
+  // 🔥 aktifkan leaderboard realtime
+  listenPlayers();
 }
 
-// NEXT SOAL (HOST)
+// NEXT SOAL (HOST ONLY)
 function nextQuestion(){
+  if(!pin) return;
+
   db.ref("games/"+pin+"/questionIndex")
-  .transaction(n => (n||0)+1);
+  .transaction(n => (n ?? -1) + 1);
 }
 
 // ================== JOIN ==================
@@ -55,7 +59,7 @@ function joinGame(){
   window.location.href = "player.html";
 }
 
-// ================== LISTEN ==================
+// ================== LISTEN SOAL ==================
 function listenQuestion(){
   pin = localStorage.getItem("pin");
 
@@ -81,6 +85,7 @@ function loadQuestion(){
   const btns = document.querySelectorAll("#answers button");
   btns.forEach((b,i)=>{
     b.innerText = quiz[index].a[i];
+    b.disabled = false; // aktifkan ulang tombol
   });
 }
 
@@ -89,7 +94,6 @@ function answer(i){
   const name = localStorage.getItem("name");
   const pin = localStorage.getItem("pin");
 
-  // Disable klik biar tidak spam
   const btns = document.querySelectorAll("#answers button");
   btns.forEach(b => b.disabled = true);
 
@@ -103,18 +107,10 @@ function answer(i){
     document.getElementById("wrong").play();
   }
 
-  // Delay biar tidak terlalu cepat pindah
-  setTimeout(()=>{
-    db.ref("games/"+pin+"/questionIndex")
-    .transaction(n => (n||0)+1);
-
-    // Aktifkan lagi tombol
-    btns.forEach(b => b.disabled = false);
-
-  }, 1000);
+  // ❌ TIDAK ADA AUTO NEXT DI PLAYER (BIAR STABIL)
 }
 
-// ================== LEADERBOARD ==================
+// ================== PLAYER LEADERBOARD ==================
 function showLeaderboard(){
   document.getElementById("quiz").style.display = "none";
   document.getElementById("leaderboard").style.display = "block";
@@ -123,7 +119,6 @@ function showLeaderboard(){
 
   db.ref("games/"+pin+"/players").on("value", snap=>{
     const data = snap.val();
-
     if(!data) return;
 
     let rank = Object.entries(data)
@@ -136,5 +131,43 @@ function showLeaderboard(){
     });
 
     document.getElementById("leaderboard").innerHTML = html;
+  });
+}
+
+// ================== HOST LEADERBOARD ==================
+function listenPlayers(){
+  if(!pin) return;
+
+  db.ref("games/"+pin+"/players").on("value", snap=>{
+    const data = snap.val();
+
+    const el = document.getElementById("leaderboard");
+    if(!el) return;
+
+    if(!data){
+      el.innerHTML = "Belum ada player";
+      return;
+    }
+
+    let rank = Object.entries(data)
+    .sort((a,b)=>b[1].score - a[1].score);
+
+    let html = "<h3>🏆 Ranking</h3>";
+
+    rank.forEach((p,i)=>{
+      html += `
+        <div style="
+          background:#1e293b;
+          margin:5px;
+          padding:10px;
+          border-radius:10px;
+          ${i===0 ? "border:2px solid gold;" : ""}
+        ">
+          ${i+1}. ${p[0]} - ${p[1].score}
+        </div>
+      `;
+    });
+
+    el.innerHTML = html;
   });
 }
