@@ -17,28 +17,33 @@ const quiz = [
   }
 ];
 
-// HOST
+// ================== HOST ==================
 function createGame(){
   pin = Math.floor(100000 + Math.random()*900000);
 
   document.getElementById("pin").innerText = pin;
 
-db.ref("games/"+pin).set({
-  questionIndex: -1,
-  players: {}
-});
+  db.ref("games/"+pin).set({
+    questionIndex: -1,
+    players: {}
+  });
 }
 
-// NEXT SOAL
+// NEXT SOAL (HOST)
 function nextQuestion(){
   db.ref("games/"+pin+"/questionIndex")
   .transaction(n => (n||0)+1);
 }
 
-// JOIN
+// ================== JOIN ==================
 function joinGame(){
   playerName = document.getElementById("name").value;
   pin = document.getElementById("pin").value;
+
+  if(!playerName || !pin){
+    alert("Isi nama dan PIN dulu!");
+    return;
+  }
 
   db.ref("games/"+pin+"/players/"+playerName).set({
     score: 0
@@ -50,7 +55,7 @@ function joinGame(){
   window.location.href = "player.html";
 }
 
-// LISTEN SOAL
+// ================== LISTEN ==================
 function listenQuestion(){
   pin = localStorage.getItem("pin");
 
@@ -61,8 +66,11 @@ function listenQuestion(){
   });
 }
 
-// LOAD SOAL
+// ================== LOAD SOAL ==================
 function loadQuestion(){
+
+  if(index === null || index < 0) return;
+
   if(index >= quiz.length){
     showLeaderboard();
     return;
@@ -76,10 +84,14 @@ function loadQuestion(){
   });
 }
 
-// JAWAB
+// ================== JAWAB ==================
 function answer(i){
   const name = localStorage.getItem("name");
   const pin = localStorage.getItem("pin");
+
+  // Disable klik biar tidak spam
+  const btns = document.querySelectorAll("#answers button");
+  btns.forEach(b => b.disabled = true);
 
   if(i === quiz[index].correct){
     document.getElementById("correct").play();
@@ -91,17 +103,18 @@ function answer(i){
     document.getElementById("wrong").play();
   }
 
-  // 🔥 PINDAH SOAL OTOMATIS
-  db.ref("games/"+pin+"/questionIndex")
-  .transaction(n => (n||0)+1);
+  // Delay biar tidak terlalu cepat pindah
+  setTimeout(()=>{
+    db.ref("games/"+pin+"/questionIndex")
+    .transaction(n => (n||0)+1);
+
+    // Aktifkan lagi tombol
+    btns.forEach(b => b.disabled = false);
+
+  }, 1000);
 }
 
-  } else {
-    document.getElementById("wrong").play();
-  }
-}
-
-// LEADERBOARD
+// ================== LEADERBOARD ==================
 function showLeaderboard(){
   document.getElementById("quiz").style.display = "none";
   document.getElementById("leaderboard").style.display = "block";
@@ -110,6 +123,8 @@ function showLeaderboard(){
 
   db.ref("games/"+pin+"/players").on("value", snap=>{
     const data = snap.val();
+
+    if(!data) return;
 
     let rank = Object.entries(data)
     .sort((a,b)=>b[1].score - a[1].score);
