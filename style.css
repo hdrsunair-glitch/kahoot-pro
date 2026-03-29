@@ -1,30 +1,90 @@
 body {
-  font-family: Arial;
+  font-family: Arial, sans-serif;
   text-align: center;
-  background: #0f172a;
+  background: linear-gradient(135deg, #0f172a, #1e293b);
   color: white;
+  margin: 0;
+  padding: 20px;
 }
 
-button {
-  width: 40%;
+/* Judul */
+h1 {
+  margin-bottom: 20px;
+}
+
+/* Input */
+input {
+  padding: 12px;
   margin: 10px;
-  padding: 20px;
+  border-radius: 8px;
+  border: none;
+  width: 200px;
+  font-size: 16px;
+}
+
+/* Tombol umum */
+button {
+  padding: 15px;
+  margin: 10px;
   font-size: 18px;
   border: none;
-  border-radius: 10px;
+  border-radius: 12px;
   cursor: pointer;
+  transition: 0.2s;
 }
 
-button:nth-child(1){ background: red; }
-button:nth-child(2){ background: blue; }
-button:nth-child(3){ background: yellow; color:black;}
-button:nth-child(4){ background: green; }
-
+/* Hover effect */
 button:hover {
-  transform: scale(1.1);
+  transform: scale(1.05);
+  opacity: 0.9;
 }
 
-input {
-  padding: 10px;
-  margin: 10px;
+/* GRID JAWABAN */
+#answers {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 15px;
+  max-width: 500px;
+  margin: 20px auto;
+}
+
+/* WARNA KHUSUS JAWABAN */
+#answers button:nth-child(1) {
+  background: #ef4444;
+}
+
+#answers button:nth-child(2) {
+  background: #3b82f6;
+}
+
+#answers button:nth-child(3) {
+  background: #facc15;
+  color: black;
+}
+
+#answers button:nth-child(4) {
+  background: #22c55e;
+}
+
+/* Leaderboard */
+#leaderboard {
+  margin-top: 20px;
+  font-size: 18px;
+}
+
+/* Loading */
+#loading {
+  margin-top: 50px;
+  font-size: 22px;
+}
+
+/* RESPONSIVE HP */
+@media (max-width: 600px) {
+  #answers {
+    grid-template-columns: 1fr;
+  }
+
+  button {
+    width: 90%;
+  }
 }
