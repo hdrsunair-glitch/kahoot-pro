@@ -24,7 +24,8 @@ function createGame(){
 
   db.ref("games/"+pin).set({
     questionIndex: -1,
-    players: {}
+    players: {},
+    answered: false
   }).then(() => {
     // 🔥 tunggu database siap baru listen
     listenPlayers();
@@ -35,8 +36,10 @@ function createGame(){
 function nextQuestion(){
   if(!pin) return;
 
-  db.ref("games/"+pin+"/questionIndex")
-  .transaction(n => (n ?? -1) + 1);
+  db.ref("games/"+pin).update({
+    questionIndex: index + 1,
+    answered: false
+  });
 }
 
 // ================== JOIN ==================
@@ -63,11 +66,15 @@ function joinGame(){
 function listenQuestion(){
   pin = localStorage.getItem("pin");
 
-  db.ref("games/"+pin+"/questionIndex")
-  .on("value", snap=>{
-    index = snap.val();
-    loadQuestion();
-  });
+db.ref("games/"+pin+"/questionIndex")
+.on("value", snap=>{
+  index = snap.val();
+
+  // reset answered tiap soal baru
+  db.ref("games/"+pin+"/answered").set(false);
+
+  loadQuestion();
+});
 }
 
 // ================== LOAD SOAL ==================
@@ -107,7 +114,16 @@ function answer(i){
     document.getElementById("wrong").play();
   }
 
-  // ❌ TIDAK ADA AUTO NEXT DI PLAYER (BIAR STABIL)
+  // 🔥 AUTO NEXT (HANYA 1 PLAYER YANG JALANKAN)
+  setTimeout(()=>{
+    db.ref("games/"+pin).transaction(game=>{
+      if(game && !game.answered){
+        game.answered = true;
+        game.questionIndex++;
+      }
+      return game;
+    });
+  }, 3000);
 }
 
 // ================== PLAYER LEADERBOARD ==================
