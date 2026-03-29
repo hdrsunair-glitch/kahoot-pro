@@ -1,33 +1,91 @@
 <!DOCTYPE html>
-<html>
+<html lang="id">
 <head>
-<title>Player</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Player - Kahoot Pro</title>
+
 <link rel="stylesheet" href="style.css">
 </head>
 
-<body onload="listenQuestion()">
+<body onload="initPlayer()">
 
-<div id="quiz">
+<div id="loading">
+  <h2>⏳ Menunggu soal...</h2>
+</div>
+
+<div id="quiz" style="display:none;">
   <h2 id="question"></h2>
 
   <div id="answers">
-    <button onclick="answer(0)"></button>
-    <button onclick="answer(1)"></button>
-    <button onclick="answer(2)"></button>
-    <button onclick="answer(3)"></button>
+    <button onclick="handleAnswer(0)"></button>
+    <button onclick="handleAnswer(1)"></button>
+    <button onclick="handleAnswer(2)"></button>
+    <button onclick="handleAnswer(3)"></button>
   </div>
+
+  <p id="status"></p>
 </div>
 
-<div id="leaderboard"></div>
+<div id="leaderboard" style="display:none;"></div>
 
+<!-- AUDIO -->
 <audio id="correct" src="assets/correct.mp3"></audio>
 <audio id="wrong" src="assets/wrong.mp3"></audio>
 
+<!-- Firebase -->
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
 
+<!-- App -->
 <script src="firebase.js"></script>
 <script src="app.js"></script>
+
+<script>
+// INIT PLAYER
+function initPlayer(){
+  const pin = localStorage.getItem("pin");
+  const name = localStorage.getItem("name");
+
+  if(!pin || !name){
+    alert("Silakan join dulu!");
+    window.location.href = "index.html";
+    return;
+  }
+
+  listenQuestion();
+}
+
+// HANDLE ANSWER (ANTI SPAM + STATUS)
+function handleAnswer(i){
+  const status = document.getElementById("status");
+
+  status.innerText = "Jawaban dikirim...";
+
+  // disable tombol
+  const btns = document.querySelectorAll("#answers button");
+  btns.forEach(b => b.disabled = true);
+
+  answer(i);
+
+  setTimeout(()=>{
+    status.innerText = "";
+    btns.forEach(b => b.disabled = false);
+  },1000);
+}
+
+// TAMPILKAN QUIZ SAAT SOAL ADA
+const oldLoadQuestion = loadQuestion;
+
+loadQuestion = function(){
+  if(index >= 0){
+    document.getElementById("loading").style.display = "none";
+    document.getElementById("quiz").style.display = "block";
+  }
+
+  oldLoadQuestion();
+};
+</script>
 
 </body>
 </html>
